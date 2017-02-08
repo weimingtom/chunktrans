@@ -1,0 +1,44 @@
+
+(1)
+
+readmultibytes -> no bytes[i] == '"' condition:
+
+		if (isspace(bytes[i]) || !isalnum(bytes[i]))
+		{
+			ostring << "\\x" << hex << setw(2) << setfill('0')
+				<< (unsigned int)bytes[i]
+				<< dec;
+		}
+		else
+		{
+			ostring << bytes[i];
+		}
+		
+
+
+readstring
+
+		if (isspace(bytes[i]) || iscntrl(bytes[i]))
+		{
+			ostring << "\\x" << hex << setw(2) << setfill('0')
+				<< (unsigned int)bytes[i]
+				<< dec;
+		}
+		else if (bytes[i] == '"')
+		{
+			ostring << "\\\"";
+		}
+		else
+		{
+			ostring << bytes[i];
+		}
+		
+(2) case 3: //LUA_TNUMBER:  
+...
+					<< "\"" << "value" << "\"" << ":" << (unsigned int)header.value << ",}" 
+					<< "," << endl;
+			}
+			
+
+(unsigned int)header.value -> (double)header.value
+
