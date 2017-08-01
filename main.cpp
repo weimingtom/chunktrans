@@ -51,7 +51,7 @@ void readmultibytes(std::ostringstream &ostring, std::ifstream &fin, const char 
 	{
 		if (isspace(bytes[i]) || !isalnum(bytes[i]))
 		{
-			ostring << "\\x" << hex << setw(2) << setfill('0')
+			ostring << "\\x" << setiosflags(ios::uppercase) << hex << setw(2) << setfill('0')
 				<< (unsigned int)bytes[i]
 				<< dec;
 		}
@@ -82,7 +82,7 @@ void readstring(std::ostringstream &ostring, std::ifstream &fin, const char *nam
 	{
 		if (isspace(bytes[i]) || iscntrl(bytes[i]))
 		{
-			ostring << "\\x" << hex << setw(2) << setfill('0')
+			ostring << "\\x" << setiosflags(ios::uppercase) << hex << setw(2) << setfill('0')
 				<< (unsigned int)bytes[i]
 				<< dec;
 		}
@@ -149,7 +149,7 @@ void readcode(std::ostringstream &ostring, std::ifstream &fin, const char *name,
 	for (int i = 0; i < length; i++)
 	{
 		tab(ostring, level + 1);
-		ostring << "0x"
+		ostring << "0x" << setiosflags(ios::uppercase)
 			<< hex << setw(8) << setfill('0')
 			<< bytes[i]
 			<< dec
@@ -203,7 +203,7 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 	for (int i = 0; i < header.length; ++i)
 	{
 		tab(ostring, level + 1);
-		ostring << "0x"
+		ostring << "0x" << setiosflags(ios::uppercase)
 			<< hex << setw(8) << setfill('0')
 			<< bytes[i]
 			<< dec
@@ -247,7 +247,7 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 		{
 			if (isspace(bytes[i]) || iscntrl(bytes[i]))
 			{
-				ostring << "\\x" << hex << setw(2) << setfill('0') 
+				ostring << "\\x" << setiosflags(ios::uppercase) << hex << setw(2) << setfill('0') 
 					<< (unsigned int)bytes[i]
 					<< dec;
 			}
@@ -306,7 +306,7 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 		{
 			if (isspace(bytes[i]) || iscntrl(bytes[i]))
 			{
-				ostring << "\\x" << hex << setw(2) << setfill('0')
+				ostring << "\\x" << setiosflags(ios::uppercase) << hex << setw(2) << setfill('0')
 					<< (unsigned int)bytes[i]
 					<< dec;
 			}
@@ -402,7 +402,7 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 				
 				tab(ostring, level + 1);
 				ostring << "{" << "\"" << "type" << "\"" << ":" << (int)type << ", "
-					<< "\"" << "value" << "\"" << ":" << (unsigned int)header.value << ",}" 
+					<< "\"" << "value" << "\"" << ":" << (double)header.value << ",}" 
 					<< "," << endl;
 			}
 			break;
@@ -425,7 +425,7 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 				{
 					if (isspace(bytes[i]) || iscntrl(bytes[i]))
 					{
-						ostring << "\\x" << hex << setw(2) << setfill('0') 
+						ostring << "\\x" << setiosflags(ios::uppercase) << hex << setw(2) << setfill('0') 
 							<< (unsigned int)bytes[i]
 							<< dec;
 					}
