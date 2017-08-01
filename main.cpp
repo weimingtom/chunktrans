@@ -5,6 +5,19 @@
 #include <iomanip>
 #include <cctype>
 
+const bool DEBUG = false;
+static int position = 0;
+
+void readbuf(std::ifstream &fin, char *bytes, int len) 
+{
+	fin.read(bytes, len);
+	position += len;
+	if (DEBUG) 
+	{
+		std::cout << ">>position=" << position << "<<" << std::endl;
+	}
+}
+
 void tab(std::ostringstream &ostring, int n)
 {
 	using namespace std;
@@ -18,7 +31,7 @@ void readbyte(std::ostringstream &ostring, std::ifstream &fin, const char *name,
 {
 	using namespace std;
 	char byte;
-	fin.read(&byte, 1);
+	readbuf(fin, &byte, 1);
 	
 	tab(ostring, level);
 	ostring << "\"" << name << "\"" << ":"
@@ -30,7 +43,7 @@ void readmultibytes(std::ostringstream &ostring, std::ifstream &fin, const char 
 {
 	using namespace std;
 	char *bytes = new char[length];
-	fin.read(bytes, length);
+	readbuf(fin, bytes, length);
 
 	tab(ostring, level);
 	ostring << "\"" << name << "\"" << ":" << "\"";
@@ -58,10 +71,10 @@ void readstring(std::ostringstream &ostring, std::ifstream &fin, const char *nam
 		char bytes[4];
 		int length;
 	} header;
-	fin.read(header.bytes, 4);
+	readbuf(fin, header.bytes, 4);
 	int length = header.length;
 	char *bytes = new char[length];
-	fin.read(bytes, length);
+	readbuf(fin, bytes, length);
 	
 	tab(ostring, level);
 	ostring << "\"" << name << "\"" << ":" << "\"";
@@ -93,7 +106,7 @@ void readint32(std::ostringstream &ostring, std::ifstream &fin, const char *name
 		char bytes[4];
 		int length;
 	} header;
-	fin.read(header.bytes, sizeof(header.bytes));
+	readbuf(fin, header.bytes, sizeof(header.bytes));
 	
 	tab(ostring, level);
 	ostring << "\"" << name << "\"" << ":"
@@ -108,7 +121,7 @@ void readnumber(std::ostringstream &ostring, std::ifstream &fin, const char *nam
 		char bytes[8];
 		double length;
 	} header;
-	fin.read(header.bytes, sizeof(header.bytes));
+	readbuf(fin, header.bytes, sizeof(header.bytes));
 
 	tab(ostring, level);
 	ostring << "\"" << name << "\"" << ":"
@@ -123,10 +136,10 @@ void readcode(std::ostringstream &ostring, std::ifstream &fin, const char *name,
 		char bytes[4];
 		int length;
 	} header;
-	fin.read(header.bytes, 4);
+	readbuf(fin, header.bytes, 4);
 	int length = header.length;
 	unsigned int *bytes = new unsigned int[length];
-	fin.read((char *)bytes, sizeof(unsigned int) * length);
+	readbuf(fin, (char *)bytes, sizeof(unsigned int) * length);
 	
 	tab(ostring, level);
 	ostring << "\"" << name << "\"" << ":" << endl;
@@ -169,7 +182,7 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 		char bytes[4];
 		int length;
 	} header;
-	fin.read(header.bytes, 4);
+	readbuf(fin, header.bytes, 4);
 	
 	tab(ostring, level);
 	ostring << "\"" << "sizelineinfo" << "\"" << ":"
@@ -178,7 +191,7 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 
 	int length = header.length; 
 	unsigned int *bytes = new unsigned int[length];
-	fin.read((char *)bytes, sizeof(unsigned int) * length);
+	readbuf(fin, (char *)bytes, sizeof(unsigned int) * length);
 
 	tab(ostring, level);
 	ostring << "\"" << "lineinfo" << "\"" << ":" << endl;
@@ -202,7 +215,7 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 	ostring << "]" << "," << endl;
 
 	//sizelocvars
-	fin.read(header.bytes, 4);
+	readbuf(fin, header.bytes, 4);
 
 	tab(ostring, level);
 	ostring << "\"" << "sizelocvars" << "\"" << ":"
@@ -222,10 +235,10 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 			char bytes[4];
 			int length;
 		} header;
-		fin.read(header.bytes, 4);
+		readbuf(fin, header.bytes, 4);
 		int length = header.length;
 		char *bytes = new char[length];
-		fin.read(bytes, length);
+		readbuf(fin, bytes, length);
 
 		tab(ostring, level + 1);
 		ostring << "{"; 
@@ -249,9 +262,9 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 		}
 		ostring << "\"" << ", ";
 		delete[] bytes;
-		fin.read(header.bytes, 4);
+		readbuf(fin, header.bytes, 4);
 		ostring << "\"" << "startpc" << "\"" << ":" << header.length << ", "; 
-		fin.read(header.bytes, 4);
+		readbuf(fin, header.bytes, 4);
 		ostring << "\"" << "endpc" << "\"" << ":" << header.length << ", "; 
 		ostring << "}," << endl;
 		//readint32(fin, "startpc");
@@ -262,7 +275,7 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 	ostring << "]" << "," << endl;
 	
 	//upvalues
-	fin.read(header.bytes, 4);
+	readbuf(fin, header.bytes, 4);
 
 	tab(ostring, level);
 	ostring << "\"" << "sizeupvalues" << "\"" << ":"
@@ -281,10 +294,10 @@ void readdebug(std::ostringstream &ostring, std::ifstream &fin, int level)
 			char bytes[4];
 			int length;
 		} header;
-		fin.read(header.bytes, 4);
+		readbuf(fin, header.bytes, 4);
 		int length = header.length;
 		char *bytes = new char[length];
-		fin.read(bytes, length);
+		readbuf(fin, bytes, length);
 		
 		tab(ostring, level + 1);
 		ostring << "\"";
@@ -338,7 +351,7 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 		char bytes[4];
 		int length;
 	} header;
-	fin.read(header.bytes, 4);
+	readbuf(fin, header.bytes, 4);
 	
 	tab(ostring, level);
 	ostring << "\"" << "sizek" << "\"" << ":"
@@ -354,7 +367,7 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 	for (int i = 0; i < header.length; i++)
 	{
 		char type;
-		fin.read(&type, 1);
+		readbuf(fin, &type, 1);
 		//ostring << "type=>" << (int)type << endl;
 		switch (type)
 		{
@@ -370,7 +383,7 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 		case 1: //LUA_TBOOLEAN:
 			{
 				char byte;
-				fin.read(&byte, 1);
+				readbuf(fin, &byte, 1);
 				
 				tab(ostring, level + 1);
 				ostring << "{" << "\"" << "type" << "\"" << ":" << (int)type << ", "
@@ -385,7 +398,7 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 					char bytes[8];
 					double value;
 				} header;
-				fin.read(header.bytes, sizeof(header.bytes));
+				readbuf(fin, header.bytes, sizeof(header.bytes));
 				
 				tab(ostring, level + 1);
 				ostring << "{" << "\"" << "type" << "\"" << ":" << (int)type << ", "
@@ -400,10 +413,10 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 					char bytes[4];
 					int length;
 				} header;
-				fin.read(header.bytes, 4);
+				readbuf(fin, header.bytes, 4);
 				int length = header.length;
 				char *bytes = new char[length];
-				fin.read(bytes, length);
+				readbuf(fin, bytes, length);
 				
 				tab(ostring, level + 1);
 				ostring << "{" << "\"" << "type" << "\"" << ":" << (int)type << ", ";
@@ -439,7 +452,7 @@ void readconstant(std::ostringstream &ostring, std::ifstream &fin, int level)
 	tab(ostring, level);
 	ostring << "]," << endl;
 
-	fin.read(header.bytes, sizeof(header.bytes));
+	readbuf(fin, header.bytes, sizeof(header.bytes));
 	
 	tab(ostring, level);
 	ostring << "\"" << "sizep" << "\"" << ":"
